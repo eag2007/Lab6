@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    archiveBaseName = 'Lab5'
+    archiveVersion = ''
+}
+
+dependencies {
+    implementation 'org.jline:jline:3.29.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4'
+    implementation 'redis.clients:jedis:4.4.3'
+}
+
+application {
+    mainClass = 'org.example.Main'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.example.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
