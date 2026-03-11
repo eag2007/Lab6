@@ -12,12 +12,9 @@ import java.util.*;
 
 public class ManagerParserServer {
     private final HashMap<String, Command> commands;
-    private final List<String> historyCommands;
-    private static final int MAX_SIZE_LEN_HISTORY = 14;
 
     public ManagerParserServer() {
         this.commands = new HashMap<String, Command>();
-        this.historyCommands = new ArrayList<>(MAX_SIZE_LEN_HISTORY);
 
         this.commands.put("add", new Add());
         this.commands.put("add_if_max", new AddIfMax());

@@ -4,21 +4,18 @@ import org.example.packet.collection.Route;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
-import org.example.server.managers.ManagerSerialize;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.List;
 
 import static org.example.server.Server.managerCollections;
+import static org.example.server.Server.writeModule;
 
 public class Show implements Command {
     public int executeCommand(String[] args, RouteClient value, SocketChannel clientChannel) {
         try {
-            // Получаем отсортированную коллекцию
             List<Route> routes = managerCollections.getSortedCollections();
 
-            // Создаем ответ
             ResponsePacket response;
             if (routes.isEmpty()) {
                 response = new ResponsePacket(
@@ -33,11 +30,7 @@ public class Show implements Command {
                         routes
                 );
             }
-
-            // Сериализуем и отправляем
-            byte[] data = ManagerSerialize.serialize(response);
-            clientChannel.write(ByteBuffer.wrap(data));
-
+            writeModule.writeResponseForClient(clientChannel, response);
             return 200;
 
         } catch (Exception e) {
@@ -47,8 +40,7 @@ public class Show implements Command {
                         "Ошибка при получении коллекции: " + e.getMessage(),
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(error);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
                 System.out.println("Ошибка создания ResponsePacket");
             }

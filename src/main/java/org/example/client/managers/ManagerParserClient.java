@@ -7,6 +7,7 @@ import org.example.client.enums.Colors;
 import java.util.*;
 
 import static org.example.client.Client.managerInputOutput;
+import static org.example.client.Client.server;
 
 public class ManagerParserClient {
     private final HashMap<String, Command> commands;
@@ -61,7 +62,7 @@ public class ManagerParserClient {
             }
             this.historyCommands.add(s);
 
-            cmd.executeCommand(args);
+            cmd.executeCommand(args, server);
         } else {
             managerInputOutput.writeLineIO("Неизвестная команда\n", Colors.RED);
         }

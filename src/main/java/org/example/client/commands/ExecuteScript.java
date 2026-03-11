@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.channels.SocketChannel;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class ExecuteScript implements Command {
     private static final Set<String> setPaths = new HashSet<>();
     private int lineNumber = 0;
 
-    public void executeCommand(String[] args) {
+    public void executeCommand(String[] args, SocketChannel serverChannel) {
         if (!checkArg(args)) {
             managerInputOutput.writeLineIO("Ошибка, синтаксис команды: execute_script file_name\n", Colors.RED);
             return;

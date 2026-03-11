@@ -1,15 +1,13 @@
 package org.example.server.commands;
 
-import org.example.packet.collection.Route;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
-import org.example.server.managers.ManagerSerialize;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import static org.example.server.Server.managerCollections;
+import static org.example.server.Server.writeModule;
 
 public class Clear implements Command {
     public int executeCommand(String[] args, RouteClient value, SocketChannel clientChannel) {
@@ -21,9 +19,7 @@ public class Clear implements Command {
                     "Коллекция очищена",
                     null
             );
-            byte[] data = ManagerSerialize.serialize(response);
-            clientChannel.write(ByteBuffer.wrap(data));
-
+            writeModule.writeResponseForClient(clientChannel, response);
             return 200;
 
         } catch (Exception e) {
@@ -33,8 +29,7 @@ public class Clear implements Command {
                         "Ошибка: " + e.getMessage(),
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(error);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
                 System.out.println("Ошибка создания ResponsePacket");
             }

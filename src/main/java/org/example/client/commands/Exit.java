@@ -4,18 +4,19 @@ import org.example.client.enums.Colors;
 import org.example.client.interfaces.Command;
 
 import java.io.IOException;
+import java.nio.channels.SocketChannel;
 
-import static org.example.client.Client.channel;
+import static org.example.client.Client.server;
 import static org.example.client.Client.managerInputOutput;
 
 public class Exit implements Command {
 
-    public void executeCommand(String[] args) {
+    public void executeCommand(String[] args, SocketChannel serverChannel) {
         try {
             if (checkArgs(args)) {
                 managerInputOutput.closeIO();
                 managerInputOutput.writeLineIO("Завершение работы\n", Colors.GREEN);
-                channel.close();
+                server.close();
                 System.exit(0);
             } else {
                 managerInputOutput.writeLineIO("Неверное количество аргументов\n", Colors.RED);

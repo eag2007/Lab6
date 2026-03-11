@@ -4,13 +4,12 @@ import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
 import org.example.packet.collection.Route;
-import org.example.server.managers.ManagerSerialize;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import static org.example.server.Server.managerCollections;
+import static org.example.server.Server.writeModule;
 
 public class RemoveFirst implements Command {
     public int executeCommand(String[] args, RouteClient values, SocketChannel clientChannel) {
@@ -25,8 +24,7 @@ public class RemoveFirst implements Command {
                         "Объект удалён с id = " + route.getId(), route.getId());
             }
 
-            byte[] serialize_data = ManagerSerialize.serialize(response);
-            clientChannel.write(ByteBuffer.wrap(serialize_data));
+            writeModule.writeResponseForClient(clientChannel, response);
             return route == null ? 400 : 200;
         } catch (IOException e) {
             System.out.println();

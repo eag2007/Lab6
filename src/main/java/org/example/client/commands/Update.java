@@ -2,7 +2,6 @@ package org.example.client.commands;
 
 import org.example.client.enums.Colors;
 import org.example.client.interfaces.Command;
-import org.example.client.managers.ManagerDeserialize;
 import org.example.client.managers.ManagerSerialize;
 import org.example.packet.CommandPacket;
 import org.example.packet.ResponsePacket;
@@ -10,29 +9,21 @@ import org.example.packet.collection.RouteClient;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 
 import static org.example.client.Client.*;
 
 public class Update implements Command {
-    public void executeCommand(String[] args) {
+    public void executeCommand(String[] args, SocketChannel serverChannel) {
         try {
             if (checkArgs(args)) {
                 CommandPacket commandPacket = new CommandPacket("update", args, null);
 
-                byte[] serialize_data = ManagerSerialize.serialize(commandPacket);
-                channel.write(ByteBuffer.wrap(serialize_data));
+                writeModule.writePacketForServer(serverChannel, commandPacket);
 
-                buffer.clear();
-                int byteSize = channel.read(buffer);
+                ResponsePacket response = readModule.readResponseForClient(serverChannel);
 
-                if (byteSize > 0) {
-                    buffer.flip();
-
-                    byte[] responseData = new byte[buffer.remaining()];
-                    buffer.get(responseData);
-
-                    ResponsePacket response = ManagerDeserialize.deserialize(responseData);
-
+                if (response != null) {
                     if (response.getStatusCode() == 200) {
                         managerInputOutput.writeLineIO("Элемент найден, введите значения полей\n", Colors.GREEN);
 
@@ -40,20 +31,11 @@ public class Update implements Command {
 
                         CommandPacket updatePacket = new CommandPacket("update", args, route);
 
-                        byte[] serialize_update_data = ManagerSerialize.serialize(updatePacket);
-                        channel.write(ByteBuffer.wrap(serialize_update_data));
+                        writeModule.writePacketForServer(serverChannel, updatePacket);
 
-                        buffer.clear();
-                        int byteSizeUpdate = channel.read(buffer);
+                        response = readModule.readResponseForClient(serverChannel);
 
-                        if (byteSizeUpdate > 0) {
-                            buffer.flip();
-
-                            responseData = new byte[buffer.remaining()];
-                            buffer.get(responseData);
-
-                            response = ManagerDeserialize.deserialize(responseData);
-
+                        if (response != null) {
                             if (response.getStatusCode() == 200) {
                                 managerInputOutput.writeLineIO("Сервер: " + response.getMessage() + "\n", Colors.GREEN);
                             } else if (response.getStatusCode() == 400) {

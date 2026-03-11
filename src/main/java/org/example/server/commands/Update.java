@@ -4,13 +4,12 @@ import org.example.packet.collection.Route;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
-import org.example.server.managers.ManagerSerialize;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.PriorityQueue;
 
 import static org.example.server.Server.managerCollections;
+import static org.example.server.Server.writeModule;
 
 public class Update implements Command {
     public int executeCommand(String[] args, RouteClient newRoute, SocketChannel clientChannel) {
@@ -28,9 +27,7 @@ public class Update implements Command {
                     response = new ResponsePacket(400, "Элемент с id " + id + " не найден", null);
                 }
 
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
-
+                writeModule.writeResponseForClient(clientChannel, response);
                 return exists ? 200 : 400;
             }
 
@@ -67,8 +64,7 @@ public class Update implements Command {
                             "Элемент с id " + id + " обновлен",
                             null
                     );
-                    byte[] data = ManagerSerialize.serialize(response);
-                    clientChannel.write(ByteBuffer.wrap(data));
+                    writeModule.writeResponseForClient(clientChannel, response);
                     return 200;
                 } else {
                     ResponsePacket response = new ResponsePacket(
@@ -76,8 +72,7 @@ public class Update implements Command {
                             "Элемент с id = " + id + " не найден",
                             null
                     );
-                    byte[] data = ManagerSerialize.serialize(response);
-                    clientChannel.write(ByteBuffer.wrap(data));
+                    writeModule.writeResponseForClient(clientChannel, response);
                     return 400;
                 }
             }
@@ -85,8 +80,7 @@ public class Update implements Command {
         } catch (Exception e) {
             try {
                 ResponsePacket error = new ResponsePacket(500, "Ошибка: " + e.getMessage(), null);
-                byte[] data = ManagerSerialize.serialize(error);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
                 System.out.println("Ошибка создания ResponsePacket");
             }

@@ -3,12 +3,14 @@ package org.example.client.commands;
 import org.example.client.enums.Colors;
 import org.example.client.interfaces.Command;
 
+import java.nio.channels.SocketChannel;
+
 import static org.example.client.Client.managerInputOutput;
 import static org.example.client.Client.managerParserClient;
 
 public class Help implements Command {
 
-    public void executeCommand(String[] args) {
+    public void executeCommand(String[] args, SocketChannel serverChannel) {
         if (checkArgs(args)) {
             managerInputOutput.writeLineIO("Справка по командам:\n");
             managerInputOutput.writeLineIO("------------------------------------------------------\n");

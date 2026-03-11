@@ -5,13 +5,12 @@ import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
 import org.example.server.managers.ManagerGenerateId;
-import org.example.server.managers.ManagerSerialize;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Comparator;
 
 import static org.example.server.Server.managerCollections;
+import static org.example.server.Server.writeModule;
 
 public class AddIfMax implements Command {
     public int executeCommand(String[] args, RouteClient value, SocketChannel clientChannel) {
@@ -22,8 +21,7 @@ public class AddIfMax implements Command {
                         "Не переданы данные элемента",
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, response);
                 return 400;
             }
 
@@ -42,8 +40,7 @@ public class AddIfMax implements Command {
                         "Коллекция была пуста, элемент добавлен",
                         newRoute.getId()
                 );
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, response);
                 return 200;
             }
 
@@ -58,18 +55,15 @@ public class AddIfMax implements Command {
                         "Элемент добавлен (превышает максимальный)",
                         newRoute.getId()
                 );
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, response);
             } else {
                 ResponsePacket response = new ResponsePacket(
                         400,
                         "Элемент не добавлен (не превышает максимальный)",
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, response);
             }
-
             return 200;
 
         } catch (Exception e) {
@@ -79,8 +73,7 @@ public class AddIfMax implements Command {
                         "Ошибка при добавлении: " + e.getMessage(),
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(error);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
                 System.out.println("Ошибка создания ResponsePacket");
             }

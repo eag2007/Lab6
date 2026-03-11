@@ -3,12 +3,13 @@ package org.example.client;
 import org.example.client.commands.Exit;
 import org.example.client.enums.Colors;
 import org.example.client.managers.*;
+import org.example.client.modules.ReadModule;
+import org.example.client.modules.WriteModule;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class Client {
@@ -16,7 +17,9 @@ public class Client {
     public static ManagerInputOutput managerInputOutput = ManagerInputOutput.getInstance();
     public static ManagerParserClient managerParserClient = new ManagerParserClient();
     public static ByteBuffer buffer = ByteBuffer.allocate(8192);
-    public static SocketChannel channel = null;
+    public static SocketChannel server = null;
+    public static ReadModule readModule = new ReadModule();
+    public static WriteModule writeModule = new WriteModule();
 
     public static void main(String[] args) {
         try {
@@ -27,20 +30,20 @@ public class Client {
             while (!connected) {
                 try {
                     managerInputOutput.writeLineIO("Подключение к серверу...\n", Colors.BLUE);
-                    channel = SocketChannel.open();
-                    channel.connect(new InetSocketAddress("localhost", 8080));
+                    server = SocketChannel.open();
+                    server.configureBlocking(true);
+                    server.connect(new InetSocketAddress("localhost", 8080));
                     connected = true;
                     managerInputOutput.writeLineIO("Вы подключились к серверу\n", Colors.GREEN);
                 } catch (IOException e) {
                     managerInputOutput.writeLineIO("Сервер не доступен. Нажмите Enter для повторной попытки...\n", Colors.RED);
                     if (managerInputOutput.readLineIO().trim().replaceAll("\\s+", " ").equalsIgnoreCase("exit")) {
-                        new Exit().executeCommand(new String[]{});
+                        new Exit().executeCommand(new String[]{}, server);
                         return;
                     }
                 }
             }
 
-            // Основной цикл команд
             while (true) {
                 String input = managerInputOutput.readLineIO("Введите команду : ");
                 managerParserClient.parserCommand(input);

@@ -1,15 +1,13 @@
 package org.example.server.commands;
 
-import org.example.packet.collection.Route;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
-import org.example.server.managers.ManagerSerialize;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import static org.example.server.Server.managerCollections;
+import static org.example.server.Server.writeModule;
 
 public class RemoveById implements Command {
     public int executeCommand(String[] args, RouteClient value, SocketChannel clientChannel) {
@@ -25,8 +23,7 @@ public class RemoveById implements Command {
                         "Элемент с id " + id + " удален",
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, response);
                 return 200;
             } else {
                 ResponsePacket response = new ResponsePacket(
@@ -34,8 +31,7 @@ public class RemoveById implements Command {
                         "Элемент с id " + id + " не найден",
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(response);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, response);
                 return 400;
             }
 
@@ -46,8 +42,7 @@ public class RemoveById implements Command {
                         "Ошибка: " + e.getMessage(),
                         null
                 );
-                byte[] data = ManagerSerialize.serialize(error);
-                clientChannel.write(ByteBuffer.wrap(data));
+                writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
                 System.out.println("Ошибка создания ResponsePacket");
             }

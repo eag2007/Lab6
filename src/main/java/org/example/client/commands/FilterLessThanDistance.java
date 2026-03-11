@@ -3,36 +3,28 @@ package org.example.client.commands;
 import org.example.client.enums.Colors;
 import org.example.client.interfaces.Command;
 import org.example.client.managers.ManagerSerialize;
-import org.example.client.managers.ManagerDeserialize;
 import org.example.packet.collection.Route;
 import org.example.packet.CommandPacket;
 import org.example.packet.ResponsePacket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.List;
 
 import static org.example.client.Client.*;
 
 public class FilterLessThanDistance implements Command {
-    public void executeCommand(String[] args) {
+    public void executeCommand(String[] args, SocketChannel serverChannel) {
         if (checkArgs(args)) {
             CommandPacket commandPacket = new CommandPacket("filter_less_than_distance", args, null);
 
             try {
-                byte[] serialize_data = ManagerSerialize.serialize(commandPacket);
-                channel.write(ByteBuffer.wrap(serialize_data));
+                writeModule.writePacketForServer(serverChannel, commandPacket);
 
-                buffer.clear();
-                int sizeBytes = channel.read(buffer);
+                ResponsePacket response = readModule.readResponseForClient(serverChannel);
 
-                if (sizeBytes > 0) {
-                    buffer.flip();
-                    byte[] responseByte = new byte[buffer.remaining()];
-                    buffer.get(responseByte);
-
-                    ResponsePacket response = ManagerDeserialize.deserialize(responseByte);
-
+                if (response != null) {
                     if (response.getStatusCode() == 200) {
                         List<Route> routes = (List<Route>) response.getData();
 
