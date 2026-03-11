@@ -3,7 +3,6 @@ package org.example.server.managers;
 import org.example.packet.collection.Coordinates;
 import org.example.packet.collection.Location;
 import org.example.packet.collection.Route;
-import org.example.server.enums.Colors;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -93,6 +92,7 @@ public class ManagerCollections {
                 ManagerGenerateId.setId(maxId);
             } catch (NumberFormatException e) {
                 System.out.println("Ошибка: неправильный формат данных при загрузке\n");
+                System.out.println("Данные не загружены в коллекцию");
             } catch (Exception e) {
                 System.out.println("Ошибка: " + e.getMessage() + "\n");
             }

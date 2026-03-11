@@ -27,9 +27,11 @@ public class WriteModule {
         }
         byte[] compressedData = baos.toByteArray();
 
-        System.out.println("Исходный размер: " + data.length + " байт");
-        System.out.println("Сжатый размер: " + compressedData.length + " байт");
-        System.out.println("Сжатие: " + (100 - (compressedData.length * 100 / data.length)) + "%");
+        // Если надо
+        // System.out.println("Исходный размер: " + data.length + " байт");
+        // System.out.println("Сжатый размер: " + compressedData.length + " байт");
+        // System.out.println("Сжатие: " + (100 - (compressedData.length * 100 / data.length)) + "%");
+
 
         /**
          * Отправляем размер

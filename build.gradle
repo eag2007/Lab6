@@ -10,27 +10,68 @@ repositories {
     mavenCentral()
 }
 
-jar {
-    archiveBaseName = 'Lab5'
-    archiveVersion = ''
-}
-
 dependencies {
     implementation 'org.jline:jline:3.29.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4'
-    implementation 'redis.clients:jedis:4.4.3'
 }
 
-application {
-    mainClass = 'org.example.Main'
-}
+// ===== КЛИЕНТ =====
+task clientJar(type: Jar) {
+    archiveBaseName = 'client'
+    archiveVersion = '1.0'
 
-jar {
     manifest {
-        attributes 'Main-Class': 'org.example.Main'
+        attributes 'Main-Class': 'org.example.client.Client'
     }
+
+    from sourceSets.main.output
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+    exclude 'org/example/server/**'  // исключаем сервер
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// ===== СЕРВЕР =====
+task serverJar(type: Jar) {
+    archiveBaseName = 'server'
+    archiveVersion = '1.0'
+
+    manifest {
+        attributes 'Main-Class': 'org.example.server.Server'
+    }
+
+    from sourceSets.main.output
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    exclude 'org/example/client/**'  // исключаем клиент
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// ===== packet JAR (общие классы) =====
+task packetJar(type: Jar) {
+    archiveBaseName = 'packet'
+    archiveVersion = '1.0'
+
+    from sourceSets.main.output
+    include 'org/example/packet/**'  // только packet
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// Задачи для сборки
+task buildClient {
+    dependsOn clientJar
+}
+
+task buildServer {
+    dependsOn serverJar
+}
+
+task buildAll {
+    dependsOn clientJar, serverJar, packetJar
 }

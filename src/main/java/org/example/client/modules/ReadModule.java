@@ -73,8 +73,10 @@ public class ReadModule {
         }
 
         byte[] decompressedData = decompressedBaos.toByteArray();
-        System.out.println("Получено сжатых: " + compressedData.length +
-                " байт, разжато: " + decompressedData.length + " байт");
+
+        // Если надо
+        // System.out.println("Получено сжатых: " + compressedData.length +
+        //        " байт, разжато: " + decompressedData.length + " байт");
 
         return ManagerDeserialize.deserialize(decompressedData);
     }

@@ -4,17 +4,16 @@ import org.example.packet.CommandPacket;
 import org.example.server.managers.ManagerCollections;
 import org.example.server.managers.ManagerParserServer;
 import org.example.server.managers.ManagerReadWrite;
+import org.example.server.modules.ConnectModule;
 import org.example.server.modules.ReadModule;
 import org.example.server.modules.WriteModule;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.Set;
 
 public class Server {
@@ -22,6 +21,7 @@ public class Server {
     public static ManagerParserServer managerParserServer = new ManagerParserServer();
     public static ReadModule readModule = new ReadModule();
     public static WriteModule writeModule = new WriteModule();
+    public static ConnectModule connectModule = new ConnectModule();
 
     public static String pathToCollection = System.getenv("PATHTOCOLLECTION");
 
@@ -30,37 +30,29 @@ public class Server {
         try {
             managerCollections.addAllCollection(ManagerReadWrite.readCSV(pathToCollection));
 
-            ServerSocketChannel server = ServerSocketChannel.open();
+            connectModule.startServer(8080);
 
-            Selector selector = Selector.open();
-
-            server.bind(new InetSocketAddress(8080));
-            server.configureBlocking(false);
-
-            System.out.println("Сервер запущен на порту 8080");
-
-            server.register(selector, SelectionKey.OP_ACCEPT);
+            /**
+             * Обработка экстренного отключения сервера
+             * Обработка отключения сервера через ввод команд
+             */
+            ifCloseServer();
+            inputOutputServer();
 
             while (true) {
-                int countChannels = selector.select();
+                int countChannels = connectModule.getSelector().select();
                 if (countChannels == 0) {
                     continue;
                 }
 
-                Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                Set<SelectionKey> selectedKeys = connectModule.getSelector().selectedKeys();
                 Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
                 while (keyIterator.hasNext()) {
                     SelectionKey key = keyIterator.next();
 
                     if (key.isAcceptable()) {
-                        SocketChannel client = server.accept();
-                        if (client == null) {
-                            continue;
-                        }
-                        client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ);
-                        System.out.println("Клиент подключился " + client.getRemoteAddress());
+                        connectModule.acceptConnection();
                     }
 
                     if (key.isReadable()) {
@@ -84,5 +76,55 @@ public class Server {
         } catch (ClassNotFoundException e) {
             System.out.println("Ошибка десериализации " + e.getMessage());
         }
+    }
+
+    public static void inputOutputServer() {
+        new Thread(() -> {
+            Scanner scanner = new Scanner(System.in);
+            try {
+                while (true) {
+                    System.out.print("\u001B[34mКоманда для сервера$: \u001B[0m\n");
+
+                    String input = scanner.nextLine().trim();
+
+                    if (input.equalsIgnoreCase("save")) {
+                        System.out.println("Экстренное сохранение");
+                        try {
+                            ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute());
+                            System.out.println(
+                                    ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute()
+                                    ) ? "Коллекция сохранена" : " Коллекция не сохранена");
+                        } catch (Exception e) {
+                            System.out.println("Ошибка при сохранении " + e.getMessage());
+                        }
+                    } else if (input.equalsIgnoreCase("exit")) {
+                        System.exit(0);
+                    } else if (input.equalsIgnoreCase("help")) {
+                        System.out.println("help - справка");
+                        System.out.println("exit - завершить работу сервера");
+                        System.out.println("save - сохранить коллекцию");
+                    }
+                }
+            } catch (NoSuchElementException e) {
+                System.exit(0);
+            }
+        }).start();
+    }
+
+    public static void ifCloseServer() {
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(
+                        () -> {
+                            System.out.println("Завершение работы сервера, Экстренное сохранение");
+                            try {
+                                System.out.println(
+                                        ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute()
+                                        ) ? "Коллекция сохранена" : " Коллекция не сохранена");
+                            } catch (Exception e) {
+                                System.out.println("Ошибка при сохранении " + e.getMessage());
+                            }
+                        }
+                )
+        );
     }
 }

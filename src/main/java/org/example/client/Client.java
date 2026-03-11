@@ -25,7 +25,6 @@ public class Client {
         try {
             managerInputOutput.setCommands(managerParserClient.getCommandNames());
 
-            // Цикл подключения к серверу
             boolean connected = false;
             while (!connected) {
                 try {
@@ -36,7 +35,7 @@ public class Client {
                     connected = true;
                     managerInputOutput.writeLineIO("Вы подключились к серверу\n", Colors.GREEN);
                 } catch (IOException e) {
-                    managerInputOutput.writeLineIO("Сервер не доступен. Нажмите Enter для повторной попытки...\n", Colors.RED);
+                    managerInputOutput.writeLineIO("Сервер не доступен. Нажмите Enter для повторной попытки...\n", Colors.YELLOW);
                     if (managerInputOutput.readLineIO().trim().replaceAll("\\s+", " ").equalsIgnoreCase("exit")) {
                         new Exit().executeCommand(new String[]{}, server);
                         return;
@@ -45,7 +44,16 @@ public class Client {
             }
 
             while (true) {
-                String input = managerInputOutput.readLineIO("Введите команду : ");
+
+                try {
+                    server.socket().sendUrgentData(0);
+                } catch (IOException e) {
+                    managerInputOutput.writeLineIO(
+                            "Пропало соединение с сервером\nПопробуйте перезайти\nДоступен только локальный режим\n",
+                            Colors.YELLOW);
+                }
+
+                String input = managerInputOutput.readLineIO("\u001B[34mВведите команду : \u001B[0m");
                 managerParserClient.parserCommand(input);
             }
 

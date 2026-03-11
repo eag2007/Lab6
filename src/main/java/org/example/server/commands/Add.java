@@ -24,7 +24,6 @@ public class Add implements Command {
 
             managerCollections.addCollections(route);
 
-            // Создаем ResponsePacket с данными
             ResponsePacket response = new ResponsePacket(
                     200,
                     "Объект добавлен в коллекцию",

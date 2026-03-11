@@ -58,7 +58,7 @@ public class ManagerReadWrite {
         return data;
     }
 
-    public boolean writeCSV(String pathToFile) {
+    public static boolean writeCSV(String pathToFile, PriorityQueue<Route> routes) {
         if (pathToFile == null || pathToFile.trim().isEmpty()) {
             System.out.println("Ошибка: путь не указан\n");
             return false;
@@ -76,8 +76,6 @@ public class ManagerReadWrite {
             System.out.println("Ошибка: директория " + parentDir + " не существует\n");
             return false;
         }
-
-        PriorityQueue<Route> routes = managerCollections.getCollectionsRoute();
 
         try (OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(file), StandardCharsets.UTF_8)) {
