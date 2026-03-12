@@ -74,7 +74,6 @@ packet/
 ### Сервер
 ```bash
 export PATHTOCOLLECTION="/path/to/file.csv"
-gradle run --args="server"
 ```
 
 ### Клиент

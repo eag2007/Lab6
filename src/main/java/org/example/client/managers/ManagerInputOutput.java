@@ -121,18 +121,6 @@ public class ManagerInputOutput {
         System.out.print(color + message + "\u001B[0m");
     }
 
-    public boolean hasNextIntIO() {
-        return true;
-    }
-
-    public int nextIntIO() {
-        String line = readLineIO();
-        if (line != null) {
-            return Integer.parseInt(line.trim());
-        }
-        return 0;
-    }
-
     public void closeIO() {
         while (!readerStack.isEmpty()) {
             try {
