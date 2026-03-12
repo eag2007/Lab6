@@ -1,6 +1,7 @@
 package org.example.server.modules;
 
 import org.example.packet.ResponsePacket;
+import org.example.server.logger.ServerLogger;
 import org.example.server.managers.ManagerSerialize;
 
 import java.io.ByteArrayOutputStream;
@@ -27,11 +28,9 @@ public class WriteModule {
         }
         byte[] compressedData = baos.toByteArray();
 
-        // Если надо
-        // System.out.println("Исходный размер: " + data.length + " байт");
-        // System.out.println("Сжатый размер: " + compressedData.length + " байт");
-        // System.out.println("Сжатие: " + (100 - (compressedData.length * 100 / data.length)) + "%");
-
+        ServerLogger.debug("Исходный размер: {} байт", data.length);
+        ServerLogger.debug("Сжатый размер: {} байт", compressedData.length);
+        ServerLogger.debug("Сжатие: {}%", (100 - (compressedData.length * 100 / data.length)));
 
         /**
          * Отправляем размер
@@ -49,6 +48,6 @@ public class WriteModule {
         ByteBuffer buffer = ByteBuffer.wrap(compressedData);
         client.write(buffer);
 
-        System.out.println("Отправлен код: " + response.getStatusCode() + " " + client.getRemoteAddress());
+        ServerLogger.debug("Данные отправлены с кодом {} клиенту {}", response.getStatusCode(), client.getRemoteAddress());
     }
 }

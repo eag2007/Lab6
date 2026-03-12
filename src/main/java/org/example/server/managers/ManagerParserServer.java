@@ -3,7 +3,9 @@ package org.example.server.managers;
 import org.example.packet.CommandPacket;
 import org.example.server.commands.*;
 import org.example.server.interfaces.Command;
+import org.example.server.logger.ServerLogger;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
@@ -47,7 +49,7 @@ public class ManagerParserServer {
                 String response = "Неизвестная команда: " + command_name;
                 clientChannel.write(ByteBuffer.wrap(response.getBytes(StandardCharsets.UTF_8)));
             } catch (IOException e) {
-                System.out.println("Ошибка отправки ответа: " + e.getMessage());
+                ServerLogger.error("Ошибка отправки ответа: {}",e.getMessage());
             }
             return 404;
         }

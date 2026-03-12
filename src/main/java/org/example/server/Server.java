@@ -1,6 +1,7 @@
 package org.example.server;
 
 import org.example.packet.CommandPacket;
+import org.example.server.logger.ServerLogger;
 import org.example.server.managers.ManagerCollections;
 import org.example.server.managers.ManagerParserServer;
 import org.example.server.managers.ManagerReadWrite;
@@ -22,15 +23,22 @@ public class Server {
     public static ReadModule readModule = new ReadModule();
     public static WriteModule writeModule = new WriteModule();
     public static ConnectModule connectModule = new ConnectModule();
-
     public static String pathToCollection = System.getenv("PATHTOCOLLECTION");
 
+    private static final int PORT = 8080;
 
     public static void main(String[] args) {
         try {
-            managerCollections.addAllCollection(ManagerReadWrite.readCSV(pathToCollection));
+            ServerLogger.info("Коды ошибок\n200 - все хорошо\n400 - не критическая ошибка\n500 - крититческая ошибка");
 
-            connectModule.startServer(8080);
+            ServerLogger.info("Запуск сервера");
+            ServerLogger.info("Загрузка в managerCollections из файла: {}", pathToCollection);
+
+            managerCollections.addAllCollection(ManagerReadWrite.readCSV(pathToCollection));
+            ServerLogger.info("Загружено элементов {}", managerCollections.getSizeCollections());
+
+            connectModule.startServer(PORT);
+            ServerLogger.info("Сервер запущен на порту {}", PORT);
 
             /**
              * Обработка экстренного отключения сервера
@@ -65,16 +73,16 @@ public class Server {
                             client.close();
                         } else {
                             int code = managerParserServer.parserCommand(packet, client);
-                            System.out.println("Код выполнения: " + code);
+                            ServerLogger.info("Код выполнения команды {} от {}", code, client.getRemoteAddress());
                         }
                     }
                     keyIterator.remove();
                 }
             }
         } catch (IOException e) {
-            System.out.println("Ошибка на сервере " + e.getMessage());
+            ServerLogger.error("Ошибка на сервере {}", e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.out.println("Ошибка десериализации " + e.getMessage());
+            ServerLogger.error("Ошибка десериализации {}", e.getMessage());
         }
     }
 
@@ -88,16 +96,17 @@ public class Server {
                     String input = scanner.nextLine().trim();
 
                     if (input.equalsIgnoreCase("save")) {
-                        System.out.println("Экстренное сохранение");
+                        ServerLogger.info("Экстренное сохранение");
                         try {
-                            ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute());
-                            System.out.println(
-                                    ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute()
-                                    ) ? "Коллекция сохранена" : " Коллекция не сохранена");
+                            boolean flag = ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute());
+                            ServerLogger.info(
+                                    flag ? "Коллекция сохранена в файле {}" : " Коллекция не сохранена в файле {}", pathToCollection);
+                            System.out.println(flag ? "Коллекция сохранена" : " Коллекция не сохранена");
                         } catch (Exception e) {
-                            System.out.println("Ошибка при сохранении " + e.getMessage());
+                            ServerLogger.error("Ошибка при сохранении {}", e.getMessage());
                         }
                     } else if (input.equalsIgnoreCase("exit")) {
+                        ServerLogger.info("Отключение сервера");
                         System.exit(0);
                     } else if (input.equalsIgnoreCase("help")) {
                         System.out.println("help - справка");
@@ -115,13 +124,14 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(
                 new Thread(
                         () -> {
-                            System.out.println("Завершение работы сервера, Экстренное сохранение");
+                            ServerLogger.info("Завершение работы сервера, Экстренное сохранение");
                             try {
-                                System.out.println(
-                                        ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute()
-                                        ) ? "Коллекция сохранена" : " Коллекция не сохранена");
+                                boolean flag = ManagerReadWrite.writeCSV(pathToCollection, managerCollections.getCollectionsRoute());
+                                ServerLogger.info(
+                                        flag ? "Коллекция сохранена в файле {}" : " Коллекция не сохранена в файле {}",
+                                        pathToCollection);
                             } catch (Exception e) {
-                                System.out.println("Ошибка при сохранении " + e.getMessage());
+                                ServerLogger.error("Ошибка при сохранении {}", e.getMessage());
                             }
                         }
                 )

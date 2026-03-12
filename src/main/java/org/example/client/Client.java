@@ -53,7 +53,7 @@ public class Client {
                             Colors.YELLOW);
                 }
 
-                String input = managerInputOutput.readLineIO("\u001B[34mВведите команду : \u001B[0m");
+                String input = managerInputOutput.readLineIO("Введите команду : ");
                 managerParserClient.parserCommand(input);
             }
 

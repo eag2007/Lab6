@@ -3,6 +3,7 @@ package org.example.server.commands;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
+import org.example.server.logger.ServerLogger;
 
 import java.nio.channels.SocketChannel;
 
@@ -31,7 +32,7 @@ public class Clear implements Command {
                 );
                 writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
-                System.out.println("Ошибка создания ResponsePacket");
+                ServerLogger.error("Ошибка создания ResponsePacket clear");
             }
             return 500;
         }

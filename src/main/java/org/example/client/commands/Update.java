@@ -2,13 +2,12 @@ package org.example.client.commands;
 
 import org.example.client.enums.Colors;
 import org.example.client.interfaces.Command;
-import org.example.client.managers.ManagerSerialize;
 import org.example.packet.CommandPacket;
 import org.example.packet.ResponsePacket;
+import org.example.packet.collection.Route;
 import org.example.packet.collection.RouteClient;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import static org.example.client.Client.*;
@@ -27,6 +26,27 @@ public class Update implements Command {
                     if (response.getStatusCode() == 200) {
                         managerInputOutput.writeLineIO("Элемент найден, введите значения полей\n", Colors.GREEN);
 
+                        Route existingRoute = (Route) response.getData();
+                        managerInputOutput.writeLineIO("Текущие значения элемента", Colors.BLUE);
+                        managerInputOutput.writeLineIO("ID: " + existingRoute.getId() + "\n");
+                        managerInputOutput.writeLineIO("Name: " + existingRoute.getName() + "\n");
+                        managerInputOutput.writeLineIO("Coordinates:\n");
+                        managerInputOutput.writeLineIO("  X: " + existingRoute.getCoordinates().getX() + "\n");
+                        managerInputOutput.writeLineIO("  Y: " + existingRoute.getCoordinates().getY() + "\n");
+                        managerInputOutput.writeLineIO("Creation Date: " + existingRoute.getCreationDate() + "\n");
+                        managerInputOutput.writeLineIO("From Location:\n");
+                        managerInputOutput.writeLineIO("  X: " + existingRoute.getFrom().getX() + "\n");
+                        managerInputOutput.writeLineIO("  Y: " + existingRoute.getFrom().getY() + "\n");
+                        managerInputOutput.writeLineIO("  Z: " + existingRoute.getFrom().getZ() + "\n");
+                        managerInputOutput.writeLineIO("To Location:\n");
+                        managerInputOutput.writeLineIO("  X: " + existingRoute.getTo().getX() + "\n");
+                        managerInputOutput.writeLineIO("  Y: " + existingRoute.getTo().getY() + "\n");
+                        managerInputOutput.writeLineIO("  Z: " + existingRoute.getTo().getZ() + "\n");
+                        managerInputOutput.writeLineIO("Distance: " + existingRoute.getDistance() + "\n");
+                        managerInputOutput.writeLineIO("Price: " + existingRoute.getPrice() + "\n");
+                        managerInputOutput.writeLineIO("\n");
+
+                        managerInputOutput.writeLineIO("Введите новые значения: \n", Colors.BLUE);
                         RouteClient route = managerValidation.validateFromInput();
 
                         CommandPacket updatePacket = new CommandPacket("update", args, route);

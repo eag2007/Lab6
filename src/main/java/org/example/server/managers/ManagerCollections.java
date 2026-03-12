@@ -3,6 +3,7 @@ package org.example.server.managers;
 import org.example.packet.collection.Coordinates;
 import org.example.packet.collection.Location;
 import org.example.packet.collection.Route;
+import org.example.server.logger.ServerLogger;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -51,6 +52,8 @@ public class ManagerCollections {
     }
 
     public void addAllCollection(List<String[]> collectionImportCSV) {
+        long error_count = 0;
+        ServerLogger.info("Загрузка данных в коллекцию");
         long maxId = 0;
         for (String[] row : collectionImportCSV) {
             try {
@@ -91,11 +94,16 @@ public class ManagerCollections {
 
                 ManagerGenerateId.setId(maxId);
             } catch (NumberFormatException e) {
-                System.out.println("Ошибка: неправильный формат данных при загрузке\n");
-                System.out.println("Данные не загружены в коллекцию");
+                ServerLogger.error("Ошибка: неправильный формат данных при загрузке\n");
+                error_count++;
             } catch (Exception e) {
-                System.out.println("Ошибка: " + e.getMessage() + "\n");
+                ServerLogger.error("Ошибка: {}\n", e.getMessage());
             }
+        }
+        if (error_count == 0) {
+            ServerLogger.info("Данные загружены в коллекцию");
+        } else {
+            ServerLogger.info("Данные загружены с ошибками, количество ошибок {}", error_count);
         }
     }
 }

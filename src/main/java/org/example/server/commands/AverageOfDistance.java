@@ -4,6 +4,7 @@ import org.example.packet.collection.Route;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
+import org.example.server.logger.ServerLogger;
 
 import java.nio.channels.SocketChannel;
 
@@ -23,11 +24,10 @@ public class AverageOfDistance implements Command {
                 return 400;
             }
 
-            double sum = 0;
-            for (Route route : managerCollections.getCollectionsRoute()) {
-                sum += route.getDistance();
-            }
-            double average = sum / managerCollections.getSizeCollections();
+            double average = managerCollections.getCollectionsRoute().stream()
+                    .mapToLong(Route::getDistance)
+                    .average()
+                    .orElse(0.0);
 
             ResponsePacket response = new ResponsePacket(
                     200,
@@ -46,7 +46,7 @@ public class AverageOfDistance implements Command {
                 );
                 writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
-                System.out.println("Ошибка создания ResponsePacket");
+                ServerLogger.error("Ошибка создания ResponsePacket average_of_distance");
             }
             return 500;
         }

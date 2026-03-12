@@ -1,5 +1,7 @@
 package org.example.server.modules;
 
+import org.example.server.logger.ServerLogger;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
@@ -19,8 +21,6 @@ public class ConnectModule {
         this.selector = Selector.open();
 
         this.server.register(this.selector, SelectionKey.OP_ACCEPT);
-
-        System.out.println("Сервер запущен на порту " + port);
     }
 
     public Selector getSelector() {
@@ -32,7 +32,7 @@ public class ConnectModule {
         if (client != null) {
             client.configureBlocking(false);
             client.register(selector, SelectionKey.OP_READ);
-            System.out.println("Клиент подключился " + client.getRemoteAddress());
+            ServerLogger.info("Клиент подключился {}", client.getRemoteAddress());
         }
         return client;
     }
@@ -40,8 +40,10 @@ public class ConnectModule {
     public void stopServer() throws IOException {
         if (server.isOpen())
             server.close();
+        ServerLogger.info("Сервер закрыт");
 
         if (selector.isOpen())
             selector.close();
+        ServerLogger.info("Селектор закрыт");
     }
 }

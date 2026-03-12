@@ -1,6 +1,7 @@
 package org.example.server.modules;
 
 import org.example.packet.CommandPacket;
+import org.example.server.logger.ServerLogger;
 import org.example.server.managers.ManagerDeserialize;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class ReadModule {
 
         int r = clientChannel.read(buffer);
         if (r == -1) {
-            System.out.println("Клиент отключился " + clientChannel.getRemoteAddress());
+            ServerLogger.info("Клиент отключился", clientChannel.getRemoteAddress());
             return null;
         }
         buffer.flip();
@@ -26,9 +27,9 @@ public class ReadModule {
         buffer.get(data);
 
         CommandPacket packet = ManagerDeserialize.deserialize(data);
-        System.out.println("Получена команда: " + packet.getType() + " от " + clientChannel.getRemoteAddress());
-        System.out.println("Получены аргументы: " + Arrays.toString(packet.getArgs()) + " от " + clientChannel.getRemoteAddress());
-        System.out.println("Получены значения: " + packet.getValues() + " от " + clientChannel.getRemoteAddress());
+        ServerLogger.debug("Получена команда: {} от {}", packet.getType(), clientChannel.getRemoteAddress());
+        ServerLogger.debug("Получены аргументы: {} от {}", Arrays.toString(packet.getArgs()), clientChannel.getRemoteAddress());
+        ServerLogger.debug("Получены значения: {} от {}", packet.getValues(), clientChannel.getRemoteAddress());
 
         return packet;
     }

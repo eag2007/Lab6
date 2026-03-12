@@ -4,6 +4,7 @@ import org.example.packet.collection.Route;
 import org.example.packet.ResponsePacket;
 import org.example.packet.collection.RouteClient;
 import org.example.server.interfaces.Command;
+import org.example.server.logger.ServerLogger;
 import org.example.server.managers.ManagerGenerateId;
 
 import java.nio.channels.SocketChannel;
@@ -42,7 +43,7 @@ public class Add implements Command {
                 );
                 writeModule.writeResponseForClient(clientChannel, error);
             } catch (Exception ex) {
-                System.out.println("Ошибка создания ResponsePacket");
+                ServerLogger.error("Ошибка создания ResponsePacket add");
             }
             return 500;
         }

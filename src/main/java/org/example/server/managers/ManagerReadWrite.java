@@ -1,6 +1,7 @@
 package org.example.server.managers;
 
 import org.example.packet.collection.Route;
+import org.example.server.logger.ServerLogger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +34,7 @@ public class ManagerReadWrite {
         File file = new File(pathToFile);
 
         if (!file.exists()) {
-            System.out.println("Файл не найден: " + pathToFile + "\n");
+            ServerLogger.error("Файл не найден: {}", pathToFile);
             return data;
         }
 
@@ -49,10 +50,10 @@ public class ManagerReadWrite {
                 data.add(fields);
             }
 
-            System.out.println("Загружено строк: " + data.size() + "\n");
+            ServerLogger.info("Загружено строк: {}", data.size());
 
         } catch (IOException e) {
-            System.out.println("Ошибка чтения: " + e.getMessage() + "\n");
+            ServerLogger.error("Ошибка чтения: {}", e.getMessage());
         }
 
         return data;
@@ -60,20 +61,20 @@ public class ManagerReadWrite {
 
     public static boolean writeCSV(String pathToFile, PriorityQueue<Route> routes) {
         if (pathToFile == null || pathToFile.trim().isEmpty()) {
-            System.out.println("Ошибка: путь не указан\n");
+            ServerLogger.error("Ошибка: путь не указан");
             return false;
         }
 
         File file = new File(pathToFile);
 
         if (!pathToFile.toLowerCase().endsWith(".csv")) {
-            System.out.println("Ошибка: файл должен быть с расширением .csv\n");
+            ServerLogger.error("Ошибка: файл должен быть с расширением .csv");
             return false;
         }
 
         File parentDir = file.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
-            System.out.println("Ошибка: директория " + parentDir + " не существует\n");
+            ServerLogger.error("Ошибка: директория " + parentDir + " не существует\n");
             return false;
         }
 
@@ -100,14 +101,14 @@ public class ManagerReadWrite {
             }
 
             writer.flush();
-            System.out.println("Сохранено " + routes.size() + " маршрутов в " + pathToFile + "\n");
+            ServerLogger.info("Сохранено {} маршрутов в {}", routes.size(), pathToFile);
             return true;
 
         } catch (FileNotFoundException e) {
-            System.out.println("Ошибка: невозможно создать файл\n");
+            ServerLogger.error("Ошибка: невозможно создать файл");
             return false;
         } catch (IOException e) {
-            System.out.println("Ошибка записи: " + e.getMessage() + "\n");
+            ServerLogger.error("Ошибка записи: {}", e.getMessage());
             return false;
         }
     }

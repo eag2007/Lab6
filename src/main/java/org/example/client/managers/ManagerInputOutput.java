@@ -101,7 +101,7 @@ public class ManagerInputOutput {
             }
         }
         try {
-            return lineReader.readLine(prompt);  // prompt передаётся сюда
+            return lineReader.readLine(prompt);
         } catch (UserInterruptException e) {
             return "";
         } catch (EndOfFileException e) {
