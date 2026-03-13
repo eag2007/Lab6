@@ -12,25 +12,33 @@ import java.util.Arrays;
 public class ReadModule {
     private static final int BUFFER_SIZE = 8192;
 
-    public CommandPacket readPacketForServer(SocketChannel clientChannel) throws IOException, ClassNotFoundException {
-        ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-        buffer.clear();
+    public CommandPacket readPacketForServer(SocketChannel clientChannel) throws IOException {
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+            buffer.clear();
 
-        int r = clientChannel.read(buffer);
-        if (r == -1) {
-            ServerLogger.info("Клиент отключился", clientChannel.getRemoteAddress());
+            int r = clientChannel.read(buffer);
+            if (r == -1) {
+                return null;
+            }
+
+
+            buffer.flip();
+
+            byte[] data = new byte[buffer.remaining()];
+            buffer.get(data);
+
+            CommandPacket packet = ManagerDeserialize.deserialize(data);
+            ServerLogger.debug("Получена команда: {} от {}", packet.getType(), clientChannel.getRemoteAddress());
+            ServerLogger.debug("Получены аргументы: {} от {}", Arrays.toString(packet.getArgs()), clientChannel.getRemoteAddress());
+            ServerLogger.debug("Получены значения: {} от {}", packet.getValues(), clientChannel.getRemoteAddress());
+
+            return packet;
+        } catch (ClassNotFoundException e) {
+            ServerLogger.error("Ошибка десиарилизации: {}", clientChannel.getRemoteAddress());
+            return null;
+        } catch (IOException e) {
             return null;
         }
-        buffer.flip();
-
-        byte[] data = new byte[buffer.remaining()];
-        buffer.get(data);
-
-        CommandPacket packet = ManagerDeserialize.deserialize(data);
-        ServerLogger.debug("Получена команда: {} от {}", packet.getType(), clientChannel.getRemoteAddress());
-        ServerLogger.debug("Получены аргументы: {} от {}", Arrays.toString(packet.getArgs()), clientChannel.getRemoteAddress());
-        ServerLogger.debug("Получены значения: {} от {}", packet.getValues(), clientChannel.getRemoteAddress());
-
-        return packet;
     }
 }

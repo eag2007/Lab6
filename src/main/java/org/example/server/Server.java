@@ -71,6 +71,7 @@ public class Server {
                         if (packet == null) {
                             key.cancel();
                             client.close();
+                            ServerLogger.info("Клиент отключился {}", client.getRemoteAddress());
                         } else {
                             int code = managerParserServer.parserCommand(packet, client);
                             ServerLogger.info("Код выполнения команды {} от {}", code, client.getRemoteAddress());
@@ -81,8 +82,6 @@ public class Server {
             }
         } catch (IOException e) {
             ServerLogger.error("Ошибка на сервере {}", e.getMessage());
-        } catch (ClassNotFoundException e) {
-            ServerLogger.error("Ошибка десериализации {}", e.getMessage());
         }
     }
 

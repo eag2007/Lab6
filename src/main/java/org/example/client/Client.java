@@ -62,6 +62,13 @@ public class Client {
             managerInputOutput.closeIO();
         } catch (RuntimeException e) {
             managerInputOutput.writeLineIO("Ошибка во время работы программы\n", Colors.RED);
+        } finally {
+            try {
+                server.close();
+                managerInputOutput.writeLineIO("Соединение с сервером закрыто\n", Colors.GREEN);
+            } catch (IOException e) {
+                managerInputOutput.writeLineIO("Проблема, разрыв соединения\n", Colors.YELLOW);
+            }
         }
     }
 }
