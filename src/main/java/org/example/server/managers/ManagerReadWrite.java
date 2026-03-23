@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import static org.example.server.Server.managerCollections;
-
 
 public class ManagerReadWrite {
     private static ManagerReadWrite managerReadWrite;

@@ -1,0 +1,6 @@
+id;name;coordinates_x;coordinates_y;creation_date;from_x;from_y;from_z;to_x;to_y;to_z;distance;price
+1;Moscow;2;2;2026-03-23T12:45:59.598751040+03:00[Europe/Moscow];2.0;2.0;2;2.0;2.0;2;2;2
+2;Saint-Petersburg;2;2;2026-03-23T12:46:24.410804268+03:00[Europe/Moscow];2.0;2.0;2;2.0;2.0;2;2;2
+3;Vladivostok;2;2;2026-03-23T12:46:38.434597967+03:00[Europe/Moscow];2.0;2.0;2;2.0;2.0;2;2;2
+4;Kaliningrad;2;2;2026-03-23T12:47:01.296124832+03:00[Europe/Moscow];2.0;2.0;2;22.0;2.0;2;2;2
+5;Norilsk;23;12;2026-03-23T12:50:43.369391866+03:00[Europe/Moscow];11.0;1.0;2;2.0;3.0;1;1232143;8932

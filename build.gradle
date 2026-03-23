@@ -3,6 +3,11 @@ plugins {
     id 'application'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 group = 'org.example'
 version = '1.0'
 
@@ -30,8 +35,7 @@ task clientJar(type: Jar) {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
-    exclude 'org/example/server/**'  // исключаем сервер
-
+    exclude 'org/example/server/**'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -49,23 +53,20 @@ task serverJar(type: Jar) {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
-    exclude 'org/example/client/**'  // исключаем клиент
-
+    exclude 'org/example/client/**'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// ===== packet JAR (общие классы) =====
+// ===== packet JAR =====
 task packetJar(type: Jar) {
     archiveBaseName = 'packet'
     archiveVersion = '1.0'
 
     from sourceSets.main.output
-    include 'org/example/packet/**'  // только packet
-
+    include 'org/example/packet/**'
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// Задачи для сборки
 task buildClient {
     dependsOn clientJar
 }

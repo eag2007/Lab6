@@ -25,7 +25,7 @@ public class Server {
     public static ConnectModule connectModule = new ConnectModule();
     public static String pathToCollection = System.getenv("PATHTOCOLLECTION");
 
-    private static final int PORT = 8080;
+    private static final int DEFAULT_PORT = 8080;
 
     public static void main(String[] args) {
         try {
@@ -37,8 +37,9 @@ public class Server {
             managerCollections.addAllCollection(ManagerReadWrite.readCSV(pathToCollection));
             ServerLogger.info("Загружено элементов {}", managerCollections.getSizeCollections());
 
-            connectModule.startServer(PORT);
-            ServerLogger.info("Сервер запущен на порту {}", PORT);
+            int port = parsePortFromArgs(args);
+            connectModule.startServer(port);
+            ServerLogger.info("Сервер запущен на порту {}", port);
 
             /**
              * Обработка экстренного отключения сервера
@@ -69,9 +70,14 @@ public class Server {
                         CommandPacket packet = readModule.readPacketForServer(client);
 
                         if (packet == null) {
+                            String remoteAddress = "unknown";
+                            try {
+                                remoteAddress = client.getRemoteAddress().toString();
+                            } catch (IOException ignored) {}
+
                             key.cancel();
                             client.close();
-                            ServerLogger.info("Клиент отключился {}", client.getRemoteAddress());
+                            ServerLogger.info("Клиент отключился {}", remoteAddress);
                         } else {
                             int code = managerParserServer.parserCommand(packet, client);
                             ServerLogger.info("Код выполнения команды {} от {}", code, client.getRemoteAddress());
@@ -81,7 +87,18 @@ public class Server {
                 }
             }
         } catch (IOException e) {
-            ServerLogger.error("Ошибка на сервере {}", e.getMessage());
+            String errorMsg = e.getMessage();
+            if (errorMsg == null) {
+                errorMsg = "Неизвестная ошибка ввода-вывода";
+            }
+            ServerLogger.error("Ошибка на сервере: {}", errorMsg);
+        } finally {
+            try {
+                connectModule.stopServer();
+            } catch (IOException e) {
+                ServerLogger.error("Сервер не хочется отключаться произошла ошибка: {}", e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -135,5 +152,24 @@ public class Server {
                         }
                 )
         );
+    }
+
+    public static int parsePortFromArgs(String[] args) {
+        if (args.length > 0) {
+            try {
+                int port = Integer.parseInt(args[0]);
+                if (port < 1 || port > 65535) {
+                    ServerLogger.error("Порт {} вне допустимого диапазона (1-65535). Используется порт по умолчанию: {}",
+                            port, DEFAULT_PORT);
+                    return DEFAULT_PORT;
+                }
+                return port;
+            } catch (NumberFormatException e) {
+                ServerLogger.error("Некорректный формат порта: {}. Используется порт по умолчанию: {}",
+                        args[0], DEFAULT_PORT);
+                return DEFAULT_PORT;
+            }
+        }
+        return DEFAULT_PORT;
     }
 }

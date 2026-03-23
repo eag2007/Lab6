@@ -97,4 +97,10 @@ public class Update implements Command {
         }
         return false;
     }
+
+
+    @Override
+    public String toString() {
+        return "update - обновляет значение элемента не меняя его id";
+    }
 }
