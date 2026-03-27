@@ -3,6 +3,7 @@ package org.example.server.modules;
 import org.example.server.logger.ServerLogger;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -14,13 +15,22 @@ public class ConnectModule {
     private Selector selector;
 
     public void startServer(int port) throws IOException {
-        this.server = ServerSocketChannel.open();
-        this.server.configureBlocking(false);
-        this.server.bind(new InetSocketAddress(port));
+        try {
+            this.server = ServerSocketChannel.open();
+            this.server.configureBlocking(false);
+            this.server.bind(new InetSocketAddress(port));
 
-        this.selector = Selector.open();
+            this.selector = Selector.open();
 
-        this.server.register(this.selector, SelectionKey.OP_ACCEPT);
+            this.server.register(this.selector, SelectionKey.OP_ACCEPT);
+        } catch (BindException e) {
+            ServerLogger.info("Порт занят");
+            ServerLogger.error("Порт занят " + e.getMessage());
+            throw new IOException("Порт " + port + " занят ", e);
+        } catch (Exception e) {
+            ServerLogger.error("Что-то случилось при запуске сервера " + e.getMessage());
+            throw e;
+        }
     }
 
     public Selector getSelector() {
@@ -38,11 +48,11 @@ public class ConnectModule {
     }
 
     public void stopServer() throws IOException {
-        if (server.isOpen())
+        if (server != null && server.isOpen())
             server.close();
         ServerLogger.info("Сервер закрыт");
 
-        if (selector.isOpen())
+        if (selector != null && selector.isOpen())
             selector.close();
         ServerLogger.info("Селектор закрыт");
     }

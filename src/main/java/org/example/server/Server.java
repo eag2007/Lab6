@@ -10,6 +10,7 @@ import org.example.server.modules.ReadModule;
 import org.example.server.modules.WriteModule;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
@@ -73,7 +74,8 @@ public class Server {
                             String remoteAddress = "unknown";
                             try {
                                 remoteAddress = client.getRemoteAddress().toString();
-                            } catch (IOException ignored) {}
+                            } catch (IOException ignored) {
+                            }
 
                             key.cancel();
                             client.close();
