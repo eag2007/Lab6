@@ -29,6 +29,9 @@ public class ManagerParserServer {
         this.commands.put("remove_first", new RemoveFirst());
         this.commands.put("show", new Show());
         this.commands.put("update", new Update());
+        this.commands.put("generate_data", new GenerateData());
+        this.commands.put("see", new See());
+        this.commands.put("task_status", new TaskStatus());
     }
 
     public int parserCommand(CommandPacket commandPacket, SocketChannel clientChannel) {

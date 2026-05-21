@@ -25,6 +25,7 @@ public class ReadModule {
 
         sizeBuffer.flip();
         long compressedSize = sizeBuffer.getLong();
+        System.out.println(compressedSize);
 
         if (compressedSize > 50_000_000) {
             throw new IOException("Слишком большой ответ: " + compressedSize + " байт");
@@ -34,10 +35,13 @@ public class ReadModule {
          * Считыванием сжатое сообщение частями
          */
 
+        System.out.println(1);
         ByteArrayOutputStream compressedBaos = new ByteArrayOutputStream();
+        System.out.println(2);
         ByteBuffer dataBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 
         long remaining = compressedSize;
+        System.out.println("Загружаю данные");
         while (remaining > 0) {
             dataBuffer.clear();
             int bytesToRead = (int) Math.min(BUFFER_SIZE, remaining);
@@ -54,6 +58,7 @@ public class ReadModule {
             compressedBaos.write(chunk);
 
             remaining -= bytesRead;
+            System.out.println(remaining);
         }
 
         /**
@@ -76,7 +81,7 @@ public class ReadModule {
 
         // Если надо
         // System.out.println("Получено сжатых: " + compressedData.length +
-        //        " байт, разжато: " + decompressedData.length + " байт");
+        //        " байт, разжато: " + decompressedData.length);
 
         return ManagerDeserialize.deserialize(decompressedData);
     }

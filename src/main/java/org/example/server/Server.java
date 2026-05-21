@@ -10,7 +10,6 @@ import org.example.server.modules.ReadModule;
 import org.example.server.modules.WriteModule;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
