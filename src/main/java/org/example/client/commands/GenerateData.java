@@ -36,7 +36,7 @@ public class GenerateData implements Command {
                 String taskId = data != null ? data.get("taskId") : "?";
                 String count  = data != null ? data.get("count")  : args[0];
 
-                managerInputOutput.writeLineIO("✓ Задача запущена!\n", Colors.GREEN);
+                managerInputOutput.writeLineIO("  Задача запущена!\n", Colors.GREEN);
                 managerInputOutput.writeLineIO("  Команда  : generate_data\n");
                 managerInputOutput.writeLineIO("  Элементов: " + count + "\n");
                 managerInputOutput.writeLineIO("  Task ID  : " + taskId + "\n", Colors.YELLOW);

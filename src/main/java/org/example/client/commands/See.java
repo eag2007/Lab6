@@ -51,10 +51,9 @@ public class See implements Command {
             int total = (int) data.get("total");
             int pageSize = (int) data.get("pageSize");
 
-            managerInputOutput.writeLineIO("\n" + "=".repeat(80) + "\n", Colors.BLUE);
             managerInputOutput.writeLineIO(String.format("Страница %d из %d | Всего: %d | На странице: %d\n",
                     page, totalPages, total, pageSize), Colors.YELLOW);
-            managerInputOutput.writeLineIO("=".repeat(80) + "\n", Colors.BLUE);
+            managerInputOutput.writeLineIO("-".repeat(80) + "\n", Colors.BLUE);
 
             String header = String.format("%-5s | %-20s | %-10s",
                     "ID", "Name", "Distance");
