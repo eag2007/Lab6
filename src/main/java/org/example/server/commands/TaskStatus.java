@@ -46,8 +46,8 @@ public class TaskStatus implements Command {
         data.put("command",     task.getCommandName());
         data.put("status",      task.getStatus().name());
         data.put("message",     task.getMessage());
-        data.put("createdAt",   String.valueOf(task.getCreatedAt()));
-        data.put("finishedAt",  String.valueOf(task.getFinishedAt()));
+        data.put("created",   String.valueOf(task.getCreated()));
+        data.put("finished",  String.valueOf(task.getFinished()));
 
         try {
             ResponsePacket response = new ResponsePacket(200, "Статус задачи", data);

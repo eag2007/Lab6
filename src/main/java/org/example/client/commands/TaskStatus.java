@@ -49,8 +49,8 @@ public class TaskStatus implements Command {
                 String message   = data.getOrDefault("message", "");
                 String command   = data.getOrDefault("command", "");
                 String taskId    = data.getOrDefault("taskId", args[0]);
-                String createdAt = data.getOrDefault("createdAt", "-1");
-                String finishedAt = data.getOrDefault("finishedAt", "-1");
+                String createdAt = data.getOrDefault("created", "-1");
+                String finishedAt = data.getOrDefault("finished", "-1");
 
                 Colors statusColor = switch (status) {
                     case "DONE"        -> Colors.GREEN;

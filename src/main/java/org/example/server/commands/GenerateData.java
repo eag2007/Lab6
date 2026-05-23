@@ -22,9 +22,7 @@ import static org.example.server.Server.writeModule;
 public class GenerateData implements Command {
 
     private static final String[] NAMES = {
-            "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta",
-            "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi",
-            "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"
+            "Волга", "Анжела", "Матильда", "Глория", "Гаврилова", "Киев", "Собака"
     };
 
     @Override

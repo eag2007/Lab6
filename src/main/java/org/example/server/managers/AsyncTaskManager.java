@@ -16,36 +16,36 @@ public class AsyncTaskManager {
         private final String commandName;
         private volatile TaskStatus status;
         private volatile String message;
-        private volatile long createdAt;
-        private volatile long finishedAt;
+        private volatile long created;
+        private volatile long finished;
 
         public TaskInfo(String taskId, String commandName) {
             this.taskId = taskId;
             this.commandName = commandName;
             this.status = TaskStatus.PENDING;
             this.message = "Задача поставлена в очередь";
-            this.createdAt = System.currentTimeMillis();
-            this.finishedAt = -1;
+            this.created = System.currentTimeMillis();
+            this.finished = -1;
         }
 
         public String getTaskId()      { return taskId; }
         public String getCommandName() { return commandName; }
         public TaskStatus getStatus()  { return status; }
         public String getMessage()     { return message; }
-        public long getCreatedAt()     { return createdAt; }
-        public long getFinishedAt()    { return finishedAt; }
+        public long getCreated()     { return created; }
+        public long getFinished()    { return finished; }
 
         public void setStatus(TaskStatus status) { this.status = status; }
         public void setMessage(String message)   { this.message = message; }
         public void finish(String msg)  {
             this.status = TaskStatus.DONE;
             this.message = msg;
-            this.finishedAt = System.currentTimeMillis();
+            this.finished = System.currentTimeMillis();
         }
         public void error(String msg)   {
             this.status = TaskStatus.ERROR;
             this.message = msg;
-            this.finishedAt = System.currentTimeMillis();
+            this.finished = System.currentTimeMillis();
         }
     }
 
